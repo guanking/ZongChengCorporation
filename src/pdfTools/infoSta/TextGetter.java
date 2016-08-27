@@ -117,7 +117,7 @@ public class TextGetter extends PDFTextStripper {
 
 	public static void main(String[] args) throws IOException {
 		// t0();
-		TextGetter text = new TextGetter("files/test.pdf");
+		TextGetter text = new TextGetter("files/imgError.pdf");
 		text.deal();
 		TextGetter.textToFile(text.getText(), "files/test.txt");
 		System.out.println(text.getText());

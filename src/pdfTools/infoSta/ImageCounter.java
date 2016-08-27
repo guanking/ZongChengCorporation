@@ -58,7 +58,7 @@ public class ImageCounter extends PDFStreamEngine {
 	}
 
 	public void setPath(String path) {
-		this.count=-1;
+		this.count = -1;
 		this.path = path;
 	}
 
@@ -69,6 +69,7 @@ public class ImageCounter extends PDFStreamEngine {
 	protected void processOperator(Operator operator, List<COSBase> operands)
 			throws IOException {
 		String operation = operator.getName();
+		System.out.println(operation);
 		if ("Do".equals(operation)) {
 			COSName objectName = (COSName) operands.get(0);
 			PDXObject xobject = getResources().getXObject(objectName);
@@ -107,13 +108,13 @@ public class ImageCounter extends PDFStreamEngine {
 	}
 
 	public static void main(String[] args) throws IOException {
-		ImageCounter counter = new ImageCounter("files/test.pdf");
+		ImageCounter counter = new ImageCounter("files/imgError.pdf");
 		counter.deal();
 		System.out.println("total:" + counter.getCount());
 	}
 
 	public int getCount() throws IOException {
-		if(this.count<0){
+		if (this.count < 0) {
 			this.deal();
 		}
 		return this.count;

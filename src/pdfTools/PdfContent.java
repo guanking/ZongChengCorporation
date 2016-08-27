@@ -191,13 +191,17 @@ public class PdfContent {
 			PDOutlineItem outline = null, parent = null;
 			PDPageFitWidthDestination dest = null;
 			int index = 0;
-			for (ContentItem item : this.items) {
+			int len=this.items.size();
+			ContentItem item=null;
+			for (index=0;index<len;index++) {
+				item=this.items.get(index);
 				dest = new PDPageFitWidthDestination();
 				try {
 					dest.setPage(document.getPage(item.getPageNumber()
 							+ this.delta - 1));
 				} catch (Exception e) {
-					// e.printStackTrace();
+//					System.out.println(item);
+//					e.printStackTrace();
 					throw new Exception("Ò³Êý´íÎó£¬´íÎóÒ³Êý£º"
 							+ (item.getPageNumber() + 1));
 				}
@@ -205,6 +209,7 @@ public class PdfContent {
 				outline.setDestination(dest);
 				outline.setTitle(item.getContent());
 				outline.closeNode();
+				item.setOutline(outline);
 				parent = this.getParent(index);
 				if (parent == null) {
 					root.addLast(outline);

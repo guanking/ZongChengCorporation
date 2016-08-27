@@ -51,7 +51,7 @@ public class ExitContent extends PdfContent {
 			if (len == 0) {
 				continue;
 			}
-			if (first) {//使用第一行作为delta
+			if (first) {// 使用第一行作为delta
 				first = false;
 				try {
 					this.setDelta(Integer.parseInt(ele.trim()));
@@ -96,4 +96,14 @@ public class ExitContent extends PdfContent {
 		}
 	}
 
+	public static void main(String[] args) throws Exception {
+		ExitContent content = new ExitContent(
+				"C:\\Users\\Administrator\\Desktop\\test\\目录批量未添加成功\\bb.142857357426992620.pdf",
+				"C:\\Users\\Administrator\\Desktop\\test\\目录批量未添加成功\\bb.142857357426992620.txt");
+		int delta = 0;
+		content.setDelta(delta);
+		content.extrat();
+		System.out.println(content.getItems());
+		content.addContentDirectory();
+	}
 }

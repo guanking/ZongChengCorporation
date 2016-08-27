@@ -3,10 +3,10 @@ package pdfTools;
 public class Test {
 	public static final String Dir = "files/";
 	public static void main(String[] args) throws Exception {
-		r();
+//		r();
 //		tTrim();
 //		readFile("F:/play/projectTemp/ZongChengEleCor/test/978-7-5682-0373-9.txt");
-//		testExitContent("F:/play/projectTemp/ZongChengEleCor/test/978-7-300-21721-5.pdf","F:/play/projectTemp/ZongChengEleCor/test/978-7-300-21721-5.txt");
+		testExitContent("F:/play/projectTemp/ZongChengEleCor/test/978-7-300-21721-5.pdf","F:/play/projectTemp/ZongChengEleCor/test/978-7-300-21721-5.txt");
 		System.out.println("finish!");
 
 	}

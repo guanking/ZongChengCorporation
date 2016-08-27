@@ -12,7 +12,6 @@
 	<classpathentry kind="lib" path="E:/Android软件开发/jar/json/json-lib-2.2.3-jdk15.jar"/>
 	<classpathentry kind="lib" path="E:/Android软件开发/jar/json/json-lib-2.3-jdk13.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Administrator/.m2/repository/org/apache/pdfbox/pdfbox/2.0.0/pdfbox-2.0.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/.m2/repository/org/apache/pdfbox/pdfbox/2.0.0/pdfbox-2.0.0-sources.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Administrator/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Administrator/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Administrator/.m2/repository/org/apache/pdfbox/fontbox/2.0.0/fontbox-2.0.0.jar"/>
