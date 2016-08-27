@@ -12,12 +12,41 @@ import net.sf.json.JSONObject;
 import interfaces.ProgressDealer;
 
 public class Dealer implements Runnable {
+	/**
+	 * pdf文件名字
+	 */
 	public static final String NMAE = "name";
+	/**
+	 * 复制
+	 */
 	public static final String COPY = "copy";
+	/**
+	 * 乱码数
+	 */
 	public static final String BUG_NUM = "bug_num";
+	/**
+	 * 公式数
+	 */
 	public static final String FORMULAR_NUM = "formular_num";
+	/**
+	 * 图片数
+	 */
 	public static final String IMAGE_NUM = "image_num";
+	/**
+	 * pdf文件页数
+	 */
 	public static final String PAGE_NUM = "page_num";
+	/**
+	 * 是否有乱码
+	 */
+	public static final String HAVA_BUG = "have_bug";
+	/**
+	 * 注释数
+	 */
+	public static final String ANNOTAION_NUM = "annotAion_num";
+	/**
+	 * 备注
+	 */
 	public static final String NOTE = "note";
 	private ProgressDealer pro;
 	private File files[];
@@ -101,7 +130,7 @@ public class Dealer implements Runnable {
 		if (this.pro != null) {
 			this.pro.reset();
 		}
-		this.pro.setMaxValue(this.files.length+1);
+		this.pro.setMaxValue(this.files.length + 1);
 		TextGetter text = null;
 		ImageCounter imageCounter = null;
 		Detecter detect = null;
@@ -145,7 +174,7 @@ public class Dealer implements Runnable {
 			}
 			int numPage = text.getPageNumber();
 			json.put(Dealer.PAGE_NUM, numPage);// pdf页数
-			if(!json.containsKey(Dealer.NOTE)){
+			if (!json.containsKey(Dealer.NOTE)) {
 				json.put(Dealer.NOTE, "成功");
 			}
 			this.items.add(json);// 新加一条记录
@@ -176,9 +205,9 @@ public class Dealer implements Runnable {
 	}
 
 	public static void main(String[] args) {
-		 Dealer dealer = new Dealer(
-		 "F:\\play\\projectTemp\\ZongChengEleCor\\test");
-//		Dealer dealer = new Dealer("files");
+		Dealer dealer = new Dealer(
+				"F:\\play\\projectTemp\\ZongChengEleCor\\test");
+		// Dealer dealer = new Dealer("files");
 		dealer.setPro(new ProgressDealer() {
 
 			@Override

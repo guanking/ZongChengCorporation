@@ -197,8 +197,7 @@ public class PdfContent {
 				item=this.items.get(index);
 				dest = new PDPageFitWidthDestination();
 				try {
-					dest.setPage(document.getPage(item.getPageNumber()
-							+ this.delta - 1));
+					dest.setPage(document.getPage(item.getPageNumber()+this.delta));
 				} catch (Exception e) {
 //					System.out.println(item);
 //					e.printStackTrace();

@@ -15,6 +15,10 @@ public class Properties {
 	 */
 	public static final String CONFIG_PATH = "config/config.fig";
 	public static final String OPEN_DIR = "open_dir";
+	/**
+	 * …Ë÷√ Ù–‘
+	 */
+	public static final String SETTING="setting";
 	private JSONObject json;
 	/**
 	 * file path

@@ -943,7 +943,6 @@ public class Hello implements ModeDealer, TableDealer, ProgressDealer,
 			}
 		});
 		panel_18.add(extractInfo, BorderLayout.SOUTH);
-
 		JPanel panel_20 = new JPanel();
 		panel_18.add(panel_20, BorderLayout.WEST);
 		panel_20.setLayout(new BorderLayout(0, 0));

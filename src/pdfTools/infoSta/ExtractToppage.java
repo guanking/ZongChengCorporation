@@ -2,14 +2,17 @@ package pdfTools.infoSta;
 
 import interfaces.ProgressDealer;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
 
 public class ExtractToppage implements Runnable {
 	/**
@@ -25,6 +28,18 @@ public class ExtractToppage implements Runnable {
 	 */
 	private ProgressDealer pro;
 	private File[] files;
+	/**
+	 * Õº∆¨¿‡–Õ[png,jpg,jpeg]
+	 */
+	private String type = "png";
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 
 	public ExtractToppage(String dir, ProgressDealer pro) {
 		super();
@@ -72,17 +87,16 @@ public class ExtractToppage implements Runnable {
 		if (file == null || !file.isDirectory()) {
 			file.mkdirs();
 		}
-		PDDocument doc, outDoc;
+		PDDocument doc;
 		for (File ele : this.files) {
 			process++;
 			try {
 				doc = PDDocument.load(ele);
-
-				outDoc = new PDDocument();
 				if (doc.getNumberOfPages() >= 1) {
-					outDoc.addPage(doc.getPage(0));
-					outDoc.save(new File(file, ele.getName().replaceFirst(
-							"\\.pdf", "∑‚√Ê.pdf")));
+					PDFRenderer render = new PDFRenderer(doc);
+					BufferedImage image = render.renderImage(0);
+					ImageIO.write(image, this.type, new File(file, ele
+							.getName().replaceFirst("\\.pdf", "." + this.type)));
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
