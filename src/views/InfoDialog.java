@@ -32,6 +32,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import pdfTools.FileHelper;
+import pdfTools.infoSta.Dealer;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -96,8 +97,7 @@ public class InfoDialog extends JDialog implements ActionListener {
 		setResizable(false);
 		this.dealer = dealer;
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(
-				"F:\\Coder\\traffic\\PDFTest\\images\\info.png"));
+		setIconImage(Toolkit.getDefaultToolkit().getImage("images\\logo.png"));
 		setTitle("\u5E93");
 		setFont(new Font("Dialog", Font.PLAIN, 14));
 		setBounds(100, 100, 419, 506);
@@ -236,8 +236,7 @@ public class InfoDialog extends JDialog implements ActionListener {
 				file = new File(file, InfoDialog.this.fileName);
 				String items[] = null;
 				try {
-					String str = FileHelper.readContentFromFile(file);
-					items = str.split("\n");
+					items = Dealer.splitItems(file.getAbsolutePath());
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}

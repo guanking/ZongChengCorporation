@@ -56,7 +56,6 @@ public class FileHelper {
 		}
 		int len = 0;
 		char[] buf = new char[1024];
-
 		while ((len = reader.read(buf, 0, 1024)) != -1) {
 			sb.append(buf, 0, len);
 		}

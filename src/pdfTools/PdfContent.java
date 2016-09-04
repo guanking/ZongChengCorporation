@@ -95,7 +95,8 @@ public class PdfContent {
 	 * @return
 	 */
 	public void setSep(String sep) {
-		this.sep = TextGetter.scaling(sep);
+//		this.sep = TextGetter.scaling(sep);
+		this.sep=sep;
 	}
 
 	public LinkedList<ContentItem> getItems() {
@@ -274,10 +275,11 @@ class TempTextGetter extends TextGetter {
 		this.setEndPage(this.pageNumber);
 		Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
 		this.writeText(document, dummy);
-		/**
-		 * ½ôÖÂ²¢Ìæ»»¿Õ¸ñ
-		 */
-		this.text = TextGetter.scaling(this.sb.toString());
+//		/**
+//		 * ½ôÖÂ²¢Ìæ»»¿Õ¸ñ
+//		 */
+//		this.text = TextGetter.scaling(this.sb.toString());
+		this.text=this.sb.toString();
 		if (document != null) {
 			document.close();
 		}

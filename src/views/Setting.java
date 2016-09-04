@@ -33,6 +33,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.awt.Toolkit;
 
 public class Setting extends JDialog implements ActionListener, DialogDealer {
 
@@ -68,6 +69,8 @@ public class Setting extends JDialog implements ActionListener, DialogDealer {
 	 * Create the dialog.
 	 */
 	public Setting(DialogDealer dealer) {
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setIconImage(Toolkit.getDefaultToolkit().getImage("images\\setting.png"));
 		this.dealer = dealer;
 		setTitle("\u8BBE\u7F6E");
 		setBounds(100, 100, 476, 524);

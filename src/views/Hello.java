@@ -364,7 +364,19 @@ public class Hello implements ModeDealer, TableDealer, ProgressDealer,
 					Hello.this.extractToppageMenu.setEnabled(false);
 					return;
 				} else {
-					new Thread(new ExtractToppage(path, Hello.this)).start();
+					Setter setter = null;
+					try {
+						setter = new Setter();
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						JOptionPane.showConfirmDialog(Hello.this.frame,
+								"ÅäÖÃÎÄ¼þ´íÎó");
+						return;
+					}
+					ExtractToppage ext = new ExtractToppage(path, Hello.this);
+					ext.setType(setter.getImageType());
+					new Thread(ext).start();
 				}
 			}
 		});
@@ -382,6 +394,7 @@ public class Hello implements ModeDealer, TableDealer, ProgressDealer,
 		menu_2.add(menuItem_8);
 
 		JMenuItem menuItem_10 = new JMenuItem("\u8BBE\u7F6E");
+		menuItem_10.setIcon(new ImageIcon("images\\setting.png"));
 		menuItem_10.addActionListener(new ActionListener() {
 			/**
 			 * setting
@@ -962,7 +975,13 @@ public class Hello implements ModeDealer, TableDealer, ProgressDealer,
 								+ path);
 					}
 				}
-				new Thread(dealer).start();
+				dealer.setStaItems(items);
+				try {
+					new Thread(dealer).start();
+				} catch (Exception e1) {
+					JOptionPane.showMessageDialog(null, e1.getMessage(),
+							"ÖÂÃü´íÎó", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 
@@ -997,7 +1016,7 @@ public class Hello implements ModeDealer, TableDealer, ProgressDealer,
 				for (int i = 0; i < len; i++) {
 					json = new JSONObject();
 					for (int j = 0; j < colCount; j++) {
-						json.put(items.get(i), model.getValueAt(i, j));
+						json.put(items.get(j), model.getValueAt(i, j));
 					}
 					jsons.add(json);
 				}

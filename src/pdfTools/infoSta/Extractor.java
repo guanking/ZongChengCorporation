@@ -18,7 +18,11 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import pdfTools.FileHelper;
 import interfaces.ProgressDealer;
-
+/**
+ * extract data to excel file
+ * @author Administrator
+ *
+ */
 public class Extractor implements Runnable {
 	/**
 	 * excelFile location

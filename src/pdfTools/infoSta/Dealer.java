@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import javax.swing.JOptionPane;
 
 import pdfTools.FileHelper;
+import pdfTools.setting.Setter;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import interfaces.ProgressDealer;
@@ -89,8 +90,7 @@ public class Dealer implements Runnable {
 
 	public void setFormulars(String path) {
 		try {
-			String str = FileHelper.readContextFromFile(path);
-			this.formulars = str.split("\n");
+			this.formulars = Dealer.splitItems(path);
 			// int len = this.formulars.length;
 			// for (int i = 0; i < len; i++) {
 			// this.formulars[i] = TextGetter.scaling(this.formulars[i]);
@@ -117,8 +117,7 @@ public class Dealer implements Runnable {
 	 */
 	public void setBugs(String path) {
 		try {
-			String str = FileHelper.readContextFromFile(path);
-			this.bugCodes = str.split("\n");
+			this.bugCodes = Dealer.splitItems(path);
 			// int len = this.bugCodes.length;
 			// for (int i = 0; i < len; i++) {
 			// this.bugCodes[i] = TextGetter.scaling(this.bugCodes[i]);
@@ -138,8 +137,7 @@ public class Dealer implements Runnable {
 	 */
 	public void setAnnotations(String path) {
 		try {
-			String str = FileHelper.readContextFromFile(path);
-			this.annotations = str.split("\n");
+			this.annotations = Dealer.splitItems(path);
 			// int len = this.annotations.length;
 			// for (int i = 0; i < len; i++) {
 			// this.annotations[i] = TextGetter.scaling(this.bugCodes[i]);
@@ -150,6 +148,25 @@ public class Dealer implements Runnable {
 			JOptionPane.showMessageDialog(null, "文件：“" + path + "”存在或者已经损坏！",
 					"格式错误", JOptionPane.ERROR_MESSAGE);
 		}
+	}
+
+	public static String[] splitItems(String path) throws Exception {
+		String str = FileHelper.readContextFromFile(path);
+		String temp[] = str.split("\n");
+		int count=0;
+		for (int i = 0; i < temp.length; i++) {
+			temp[i]=temp[i].trim();
+			if(temp[i].length()>0){
+				temp[count++]=temp[i];
+			}
+		}
+		String rs[]=new String[count];
+		for(int i=0;i<count;i++){
+			rs[i]=temp[i];
+		}
+//		for (String ele : rs)
+//			System.out.println("\"" + ele + "\"");
+		return rs;
 	}
 
 	public Dealer(String path) {
@@ -194,7 +211,8 @@ public class Dealer implements Runnable {
 							|| this.staItems.contains(Dealer.ANNOTAION_NUM)
 							|| this.staItems.contains(Dealer.BUG_NUM)
 							|| this.staItems.contains(Dealer.HAVA_BUG)
-							|| this.staItems.contains(Dealer.FORMULAR_NUM)) {
+							|| this.staItems.contains(Dealer.FORMULAR_NUM)
+							|| this.staItems.contains(Dealer.PAGE_NUM)) {
 						text = new TextGetter(files[i].getAbsolutePath());
 					}
 					if (this.staItems.contains(Dealer.IMAGE_NUM)) {
@@ -223,7 +241,7 @@ public class Dealer implements Runnable {
 			}
 			json.put(Dealer.NMAE, files[i].getName()); // pdf文件名
 			try {
-				if (this.items.contains(Dealer.COPY)) {
+				if (this.staItems.contains(Dealer.COPY)) {
 					json.put(Dealer.COPY, text.getText().length() == 0 ? "否"
 							: "是"); // 是否可拷贝
 				}
@@ -245,6 +263,7 @@ public class Dealer implements Runnable {
 				}
 				if (this.staItems.contains(Dealer.ANNOTAION_NUM)) {
 					detect.setItems(this.annotations);
+					System.out.println(detect.getContext());
 					json.put(Dealer.ANNOTAION_NUM, detect.getCount()); // 注释数
 				}
 			} catch (Exception e2) {
@@ -264,7 +283,13 @@ public class Dealer implements Runnable {
 				e1.printStackTrace();
 			}
 			if (this.staItems.contains(Dealer.PAGE_NUM)) {
-				int numPage = text.getPageNumber();
+				int numPage = -1;
+				try {
+					numPage = text.getPageNumber();
+				} catch (IOException e) {
+					e.printStackTrace();
+					this.addNote(json, "页数出错");
+				}
 				json.put(Dealer.PAGE_NUM, numPage);// pdf页数
 			}
 			if (!json.containsKey(Dealer.NOTE)) {
@@ -297,9 +322,8 @@ public class Dealer implements Runnable {
 		}
 	}
 
-	public static void main(String[] args) {
-		Dealer dealer = new Dealer(
-				"F:\\play\\projectTemp\\ZongChengEleCor\\test");
+	public static void main(String[] args) throws Exception {
+		Dealer dealer = new Dealer("C:/Users/Administrator/Desktop/main");
 		// Dealer dealer = new Dealer("files");
 		dealer.setPro(new ProgressDealer() {
 
@@ -333,8 +357,11 @@ public class Dealer implements Runnable {
 				System.out.println("type:" + type + ",result:" + result);
 			}
 		});
-		dealer.setFormulars("formulars/Apache.txt");
-		dealer.setBugs("randoms/Apache.txt");
+		Setter setter = new Setter();
+		dealer.setStaItems(setter.getStatisticItems());
+		// dealer.setFormulars("formulars/Apache.txt");
+		// dealer.setBugs("randoms/one.txt");
+		dealer.setAnnotations("annotations/firano.txt");
 		dealer.run();
 	}
 }

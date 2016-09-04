@@ -8,6 +8,8 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
@@ -18,7 +20,7 @@ public class TextGetter extends PDFTextStripper {
 	 */
 	protected String path;
 	protected StringBuffer sb;
-	protected int pageNumber;
+	protected int pageNumber = -1;
 	/**
 	 * 从pdf文件中获取的文字内容
 	 */
@@ -58,10 +60,11 @@ public class TextGetter extends PDFTextStripper {
 			this.setEndPage(this.pageNumber);
 			Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
 			this.writeText(document, dummy);
-			/**
-			 * 紧致并替换空格
-			 */
-			this.text = TextGetter.scaling(this.sb.toString());
+//			/**
+//			 * 紧致并替换空格
+//			 */
+//			this.text = TextGetter.scaling(this.sb.toString());
+			this.text=this.sb.toString();
 		} finally {
 			if (document != null) {
 				document.close();
@@ -87,31 +90,35 @@ public class TextGetter extends PDFTextStripper {
 		writer.close();
 	}
 
-	/**
-	 * 将全交转化为半角，并去除空格
-	 * 
-	 * @param str
-	 * @return
-	 */
-	public static String scaling(String str) {
-		char[] chs = str.toString().toCharArray();
-		for (int i = 0; i < chs.length; i++) {
-			if (chs[i] == 12288) { // 如果是半角空格，直接用全角空格替代
-				chs[i] = ' ';
-			} else if (chs[i] >= 65281 && chs[i] <= 65374) { // 字符是!到~之间的可见字符
-				chs[i] -= 65248;
-			}
-		}
-		String temp = new String(chs);
-		temp.replaceAll("\\s", "");
-		return temp;
-	}
+//	/**
+//	 * 将全交转化为半角，并去除空格
+//	 * 
+//	 * @param str
+//	 * @return
+//	 */
+//	public static String scaling(String str) {
+//		char[] chs = str.toString().toCharArray();
+//		for (int i = 0; i < chs.length; i++) {
+//			if (chs[i] == 12288) { // 如果是半角空格，直接用全角空格替代
+//				chs[i] = ' ';
+//			} else if (chs[i] >= 65281 && chs[i] <= 65374) { // 字符是!到~之间的可见字符
+//				chs[i] -= 65248;
+//			}
+//		}
+//		String temp = new String(chs);
+//		temp.replaceAll("\\s", "");
+//		return temp;
+//	}
 
 	public String getPath() {
 		return this.path;
 	}
 
-	public int getPageNumber() {
+	public int getPageNumber() throws IOException {
+		if (this.pageNumber < 0) {
+			document = PDDocument.load(new File(this.path));
+			this.pageNumber = document.getNumberOfPages();
+		}
 		return this.pageNumber;
 	}
 

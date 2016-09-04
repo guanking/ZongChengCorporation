@@ -26,6 +26,7 @@ import javax.swing.JTextField;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Toolkit;
 
 public class FileCreateDialog extends JDialog implements ActionListener {
 	private DialogDealer dealer;
@@ -50,6 +51,7 @@ public class FileCreateDialog extends JDialog implements ActionListener {
 	 * Create the dialog.
 	 */
 	public FileCreateDialog(DialogDealer dealer) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage("images\\lib.png"));
 		setTitle("\u521B\u5EFA\u5E93");
 		this.dealer = dealer;
 		setBounds(100, 100, 409, 191);

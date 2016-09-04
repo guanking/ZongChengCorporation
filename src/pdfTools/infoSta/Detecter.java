@@ -10,12 +10,12 @@ public class Detecter {
 	}
 
 	public void setItems(String[] items) {
-		this.count=-1;
+		this.count = -1;
 		this.items = items;
 	}
 
 	public int getCount() throws Exception {
-		if(this.count<0){
+		if (this.count < 0) {
 			this.deal();
 		}
 		return count;
@@ -24,7 +24,9 @@ public class Detecter {
 	public void setContext(String context) {
 		this.context = context;
 	}
-
+	public String getContext(){
+		return this.context;
+	}
 	public Detecter(String[] items) {
 		super();
 		this.items = items;
@@ -45,15 +47,16 @@ public class Detecter {
 					begin += ele.length();
 				}
 			}
+			System.out.println("\""+ele+"\":"+this.count);
 		}
 	}
 
-	// public static void main(String[] args) throws Exception {
-	// Detecter det = new Detecter(new String[] {"http"});
-	// TextGetter t = new TextGetter("files/english.pdf");
-	// det.setContext(t.getText());
-	// det.deal();
-	// System.out.println(det.getCount());
-	// }
+	public static void main(String[] args) throws Exception {
+		Detecter det = new Detecter(new String[] { "index.html","\n","\n" });
+		TextGetter t = new TextGetter("files/english.pdf");
+		det.setContext(t.getText());
+		det.deal();
+		System.out.println(det.getCount());
+	}
 
 }

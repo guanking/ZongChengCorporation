@@ -68,57 +68,68 @@ public class ExtractToppage implements Runnable {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		if (this.pro != null) {
-			this.pro.reset();
-		}
 		try {
-			this.getFiles();
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e.getMessage(), "错误",
-					JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();
-		}
-		int process = 1;
-		if (this.pro != null) {
-			this.pro.setMaxValue(this.files.length + 1);
-			this.pro.setValue(process);
-		}
-		File file = new File(this.dir, ExtractToppage.OUTPUT_DIR);
-		if (file == null || !file.isDirectory()) {
-			file.mkdirs();
-		}
-		PDDocument doc;
-		for (File ele : this.files) {
-			process++;
-			try {
-				doc = PDDocument.load(ele);
-				if (doc.getNumberOfPages() >= 1) {
-					PDFRenderer render = new PDFRenderer(doc);
-					BufferedImage image = render.renderImage(0);
-					ImageIO.write(image, this.type, new File(file, ele
-							.getName().replaceFirst("\\.pdf", "." + this.type)));
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-				if (JOptionPane.showConfirmDialog(null, "文件读取失败，是否跳过该文件进行下一个？",
-						"警告", JOptionPane.OK_CANCEL_OPTION,
-						JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
-					continue;
-				} else {
-					return;
-				}
-			}
 			if (this.pro != null) {
+				this.pro.reset();
+			}
+			try {
+				this.getFiles();
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, e.getMessage(), "错误",
+						JOptionPane.ERROR_MESSAGE);
+				e.printStackTrace();
+			}
+			int process = 1;
+			if (this.pro != null) {
+				this.pro.setMaxValue(this.files.length + 1);
 				this.pro.setValue(process);
 			}
-			try {
-				Thread.sleep(20);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			File file = new File(this.dir, ExtractToppage.OUTPUT_DIR);
+			if (file == null || !file.isDirectory()) {
+				file.mkdirs();
 			}
+			PDDocument doc;
+			for (File ele : this.files) {
+				process++;
+				try {
+					doc = PDDocument.load(ele);
+					if (doc.getNumberOfPages() >= 1) {
+						PDFRenderer render = new PDFRenderer(doc);
+						BufferedImage image = render.renderImage(0);
+						ImageIO.write(
+								image,
+								this.type,
+								new File(file, ele.getName().replaceFirst(
+										"\\.pdf", "." + this.type)));
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+					if (JOptionPane.showConfirmDialog(null,
+							"文件读取失败，是否跳过该文件进行下一个？", "警告",
+							JOptionPane.OK_CANCEL_OPTION,
+							JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
+						continue;
+					} else {
+						return;
+					}
+				}
+				if (this.pro != null) {
+					this.pro.setValue(process);
+				}
+				try {
+					Thread.sleep(20);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			JOptionPane.showConfirmDialog(null,
+					"提取成功，文件保存在“" + file.getAbsolutePath() + "”文件夹中", "成功",
+					JOptionPane.OK_CANCEL_OPTION,
+					JOptionPane.INFORMATION_MESSAGE);
+		} catch (Exception e) {
+			JOptionPane.showConfirmDialog(null,
+					"提取失败，详细原因：\n" + e.getMessage(), "致命错误",
+					JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE);
 		}
-		JOptionPane.showConfirmDialog(null,
-				"提取成功，文件保存在“" + file.getAbsolutePath() + "”文件夹中", "成功",
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
 	}
 }
