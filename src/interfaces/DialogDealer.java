@@ -7,6 +7,7 @@ package interfaces;
  *
  */
 public interface DialogDealer {
+	public static final String SETTING="setting";
 	void onSuccess(String type, String fileName);
 
 	void onCalcle();

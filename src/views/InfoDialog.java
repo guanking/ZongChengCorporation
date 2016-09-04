@@ -3,6 +3,7 @@ package views;
 import interfaces.DialogDealer;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
 
 import javax.swing.JButton;
@@ -40,11 +41,15 @@ public class InfoDialog extends JDialog implements ActionListener {
 	/**
 	 * ¹«Ê½¿â
 	 */
-	public static final String FORMULARS="formulars";
+	public static final String FORMULARS = "formulars";
 	/**
 	 * ÂÒÂë¿â
 	 */
-	public static final String RANDOMS="randoms";
+	public static final String RANDOMS = "randoms";
+	/**
+	 * ×¢ÊÍ¿â
+	 */
+	public static final String ANNOTATIONS = "annotations";
 	private final JPanel contentPanel = new JPanel();
 	private JTable table;
 	private DialogDealer dealer;
@@ -88,14 +93,14 @@ public class InfoDialog extends JDialog implements ActionListener {
 	 * Create the dialog.
 	 */
 	public InfoDialog(DialogDealer dealer) {
+		setResizable(false);
 		this.dealer = dealer;
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		setAlwaysOnTop(true);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(
 				"F:\\Coder\\traffic\\PDFTest\\images\\info.png"));
 		setTitle("\u5E93");
 		setFont(new Font("Dialog", Font.PLAIN, 14));
-		setBounds(100, 100, 517, 506);
+		setBounds(100, 100, 419, 506);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -112,9 +117,7 @@ public class InfoDialog extends JDialog implements ActionListener {
 				{
 					this.typeBox = new JComboBox<String>();
 					this.typeBox.setPreferredSize(new Dimension(200, 21));
-					this.typeBox.setModel(new DefaultComboBoxModel<String>(
-							new String[] { "\u516C\u5F0F\u5E93",
-									"\u4E71\u7801\u5E93" }));
+					this.typeBox.setModel(new DefaultComboBoxModel(new String[] {"\u516C\u5F0F\u5E93", "\u4E71\u7801\u5E93", "\u6CE8\u91CA\u5E93"}));
 					{
 						JLabel label = new JLabel("\u5E93\u7C7B\u578B\uFF1A");
 						panel_1.add(label);
@@ -178,6 +181,9 @@ public class InfoDialog extends JDialog implements ActionListener {
 				cancelButton.setName("ok");
 				buttonPane.add(cancelButton);
 			}
+			if (this.dealer instanceof Component) {
+				this.setLocationRelativeTo((Component) this.dealer);
+			}
 		}
 		/**
 		 * Ñ¡Ôñ¿âÀàÐÍ
@@ -186,8 +192,19 @@ public class InfoDialog extends JDialog implements ActionListener {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				// TODO Auto-generated method stub
-				InfoDialog.this.type = InfoDialog.this.typeBox
-						.getSelectedIndex() == 0 ? "formulars" : "randoms";
+				switch (InfoDialog.this.typeBox.getSelectedIndex()) {
+				case 0:
+					InfoDialog.this.type = InfoDialog.FORMULARS;
+					break;
+				case 1:
+					InfoDialog.this.type = InfoDialog.RANDOMS;
+					break;
+				case 2:
+					InfoDialog.this.type = InfoDialog.ANNOTATIONS;
+					break;
+				}
+				// InfoDialog.this.type = InfoDialog.this.typeBox
+				// .getSelectedIndex() == 0 ? "formulars" : "randoms";
 				File file = new File(InfoDialog.this.type);
 				if (!file.exists() || !file.isDirectory()) {
 					file.mkdir();

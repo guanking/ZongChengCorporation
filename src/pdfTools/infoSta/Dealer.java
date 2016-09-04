@@ -3,6 +3,8 @@ package pdfTools.infoSta;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 import javax.swing.JOptionPane;
 
@@ -48,6 +50,7 @@ public class Dealer implements Runnable {
 	 * 备注
 	 */
 	public static final String NOTE = "note";
+	private LinkedList<String> staItems;
 	private ProgressDealer pro;
 	private File files[];
 	private JSONArray items;
@@ -59,25 +62,52 @@ public class Dealer implements Runnable {
 	 * 乱码库
 	 */
 	private String[] bugCodes;
+	/**
+	 * annotation library
+	 */
+	private String[] annotations;
+
+	public static HashMap<String, String> getProperityMap() {
+		HashMap<String, String> map = new HashMap<String, String>();
+		map.put(Dealer.NMAE, "文件名称");
+		map.put(Dealer.PAGE_NUM, "页数");
+		map.put(Dealer.IMAGE_NUM, "图片数");
+		map.put(Dealer.ANNOTAION_NUM, "注释数");
+		map.put(Dealer.BUG_NUM, "乱码数");
+		map.put(Dealer.FORMULAR_NUM, "公式数");
+		map.put(Dealer.HAVA_BUG, "是否有乱码");
+		map.put(Dealer.COPY, "是否可拷贝");
+		map.put(Dealer.NOTE, "备注");
+		return map;
+	}
 
 	/**
 	 * 设置公式库
 	 * 
 	 * @param path
 	 */
+
 	public void setFormulars(String path) {
 		try {
 			String str = FileHelper.readContextFromFile(path);
 			this.formulars = str.split("\n");
-			int len = this.formulars.length;
-			for (int i = 0; i < len; i++) {
-				this.formulars[i] = TextGetter.scaling(this.formulars[i]);
-			}
+			// int len = this.formulars.length;
+			// for (int i = 0; i < len; i++) {
+			// this.formulars[i] = TextGetter.scaling(this.formulars[i]);
+			// }
 		} catch (Exception e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "文件：“" + path + "”存在或者已经损坏！",
 					"格式错误", JOptionPane.ERROR_MESSAGE);
 		}
+	}
+
+	public LinkedList<String> getStaItems() {
+		return staItems;
+	}
+
+	public void setStaItems(LinkedList<String> staItems) {
+		this.staItems = staItems;
 	}
 
 	/**
@@ -89,10 +119,31 @@ public class Dealer implements Runnable {
 		try {
 			String str = FileHelper.readContextFromFile(path);
 			this.bugCodes = str.split("\n");
-			int len = this.bugCodes.length;
-			for (int i = 0; i < len; i++) {
-				this.bugCodes[i] = TextGetter.scaling(this.bugCodes[i]);
-			}
+			// int len = this.bugCodes.length;
+			// for (int i = 0; i < len; i++) {
+			// this.bugCodes[i] = TextGetter.scaling(this.bugCodes[i]);
+			// }
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "文件：“" + path + "”存在或者已经损坏！",
+					"格式错误", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	/**
+	 * 设置注释库
+	 * 
+	 * @param path
+	 */
+	public void setAnnotations(String path) {
+		try {
+			String str = FileHelper.readContextFromFile(path);
+			this.annotations = str.split("\n");
+			// int len = this.annotations.length;
+			// for (int i = 0; i < len; i++) {
+			// this.annotations[i] = TextGetter.scaling(this.bugCodes[i]);
+			// }
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -139,25 +190,63 @@ public class Dealer implements Runnable {
 			JSONObject json = new JSONObject();
 			if (i == 0) {
 				try {
-					text = new TextGetter(files[i].getAbsolutePath());
-					imageCounter = new ImageCounter(files[i].getAbsolutePath());
-					detect = new Detecter(this.bugCodes);
+					if (this.staItems.contains(Dealer.COPY)
+							|| this.staItems.contains(Dealer.ANNOTAION_NUM)
+							|| this.staItems.contains(Dealer.BUG_NUM)
+							|| this.staItems.contains(Dealer.HAVA_BUG)
+							|| this.staItems.contains(Dealer.FORMULAR_NUM)) {
+						text = new TextGetter(files[i].getAbsolutePath());
+					}
+					if (this.staItems.contains(Dealer.IMAGE_NUM)) {
+						imageCounter = new ImageCounter(
+								files[i].getAbsolutePath());
+					}
+					if (this.staItems.contains(Dealer.ANNOTAION_NUM)
+							|| this.staItems.contains(Dealer.BUG_NUM)
+							|| this.staItems.contains(Dealer.FORMULAR_NUM)
+							|| this.staItems.contains(Dealer.HAVA_BUG)) {
+						detect = new Detecter(this.bugCodes);
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			} else {
-				text.setPath(files[i].getAbsolutePath());
-				imageCounter.setPath(files[i].getAbsolutePath());
-				detect.setItems(this.bugCodes);
+				if (text != null) {
+					text.setPath(files[i].getAbsolutePath());
+				}
+				if (imageCounter != null) {
+					imageCounter.setPath(files[i].getAbsolutePath());
+				}
+				if (detect != null) {
+					detect.setItems(this.bugCodes);
+				}
 			}
-			json.put(Dealer.NMAE, files[i].getName());// pdf文件名
+			json.put(Dealer.NMAE, files[i].getName()); // pdf文件名
 			try {
-				json.put(Dealer.COPY, text.getText().length() == 0 ? 0 : 1);// 是否可拷贝
-				detect.setContext(text.getText());
-				detect.setItems(this.bugCodes);
-				json.put(Dealer.BUG_NUM, detect.getCount());// 乱码数
-				detect.setItems(this.formulars);
-				json.put(Dealer.FORMULAR_NUM, detect.getCount());// 公式数
+				if (this.items.contains(Dealer.COPY)) {
+					json.put(Dealer.COPY, text.getText().length() == 0 ? "否"
+							: "是"); // 是否可拷贝
+				}
+				if (detect != null) {
+					detect.setContext(text.getText());
+				}
+				if (this.staItems.contains(Dealer.BUG_NUM)) {
+					detect.setItems(this.bugCodes);
+					json.put(Dealer.BUG_NUM, detect.getCount()); // 乱码数
+				}
+				if (this.staItems.contains(Dealer.HAVA_BUG)) {
+					detect.setItems(this.bugCodes);
+					json.put(Dealer.HAVA_BUG, detect.getCount() == 0 ? "是"
+							: "否"); // 是否有乱码
+				}
+				if (this.staItems.contains(Dealer.FORMULAR_NUM)) {
+					detect.setItems(this.formulars);
+					json.put(Dealer.FORMULAR_NUM, detect.getCount()); // 公式数
+				}
+				if (this.staItems.contains(Dealer.ANNOTAION_NUM)) {
+					detect.setItems(this.annotations);
+					json.put(Dealer.ANNOTAION_NUM, detect.getCount()); // 注释数
+				}
 			} catch (Exception e2) {
 				this.addNote(json, "是否可拷贝出错;乱码数出错;公式数出错");
 				System.out.println("come here");
@@ -166,14 +255,18 @@ public class Dealer implements Runnable {
 				e2.printStackTrace();
 			}
 			try {
-				int imageCount = imageCounter.getCount();
-				json.put(Dealer.IMAGE_NUM, imageCount);// 图片数
+				if (imageCounter != null) {
+					int imageCount = imageCounter.getCount();
+					json.put(Dealer.IMAGE_NUM, imageCount); // 图片数
+				}
 			} catch (IOException e1) {
 				this.addNote(json, "图片数出错");
 				e1.printStackTrace();
 			}
-			int numPage = text.getPageNumber();
-			json.put(Dealer.PAGE_NUM, numPage);// pdf页数
+			if (this.staItems.contains(Dealer.PAGE_NUM)) {
+				int numPage = text.getPageNumber();
+				json.put(Dealer.PAGE_NUM, numPage);// pdf页数
+			}
 			if (!json.containsKey(Dealer.NOTE)) {
 				json.put(Dealer.NOTE, "成功");
 			}

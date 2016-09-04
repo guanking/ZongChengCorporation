@@ -58,6 +58,7 @@ import pdfTools.infoSta.Dealer;
 import pdfTools.infoSta.ExtractToppage;
 import pdfTools.infoSta.Extractor;
 import pdfTools.infoSta.Properties;
+import pdfTools.setting.Setter;
 import renders.ContentItemListRender;
 import renders.ContentItemRender;
 
@@ -97,6 +98,11 @@ import java.awt.event.InputMethodListener;
 import java.awt.event.InputMethodEvent;
 import java.awt.Frame;
 
+/**
+ * @github https://github.com/guanking/ZongChengCorporation.git
+ * @author Administrator
+ *
+ */
 public class Hello implements ModeDealer, TableDealer, ProgressDealer,
 		DialogDealer {
 	/**
@@ -149,6 +155,7 @@ public class Hello implements ModeDealer, TableDealer, ProgressDealer,
 	 * 提取pdf首页
 	 */
 	private JMenuItem extractToppageMenu;
+	private JTextField annotationsLib;
 
 	/**
 	 * Launch the application.
@@ -373,6 +380,18 @@ public class Hello implements ModeDealer, TableDealer, ProgressDealer,
 			}
 		});
 		menu_2.add(menuItem_8);
+
+		JMenuItem menuItem_10 = new JMenuItem("\u8BBE\u7F6E");
+		menuItem_10.addActionListener(new ActionListener() {
+			/**
+			 * setting
+			 */
+			public void actionPerformed(ActionEvent e) {
+				new Setting(Hello.this);
+				Hello.this.frame.setEnabled(false);
+			}
+		});
+		menu_2.add(menuItem_10);
 
 		JMenu menu_3 = new JMenu("\u5E2E\u52A9");
 		menuBar.add(menu_3);
@@ -709,6 +728,8 @@ public class Hello implements ModeDealer, TableDealer, ProgressDealer,
 					Hello.this.extractMenu.setEnabled(true);
 					Hello.this.extractInfo.setEnabled(false);
 					Hello.this.extractMenu.setEnabled(false);
+					Hello.this.refreshInfoTable();
+					break;
 				}
 			}
 		});
@@ -816,7 +837,7 @@ public class Hello implements ModeDealer, TableDealer, ProgressDealer,
 
 		JPanel panel_19 = new JPanel();
 		panel_18.add(panel_19, BorderLayout.NORTH);
-		panel_19.setLayout(new GridLayout(3, 1, 0, 0));
+		panel_19.setLayout(new GridLayout(4, 1, 0, 0));
 		/**
 		 * 批量信息处理
 		 */
@@ -863,6 +884,19 @@ public class Hello implements ModeDealer, TableDealer, ProgressDealer,
 		formularLibs.setFont(new Font("宋体", Font.PLAIN, 14));
 		formularLibs.setColumns(50);
 		panel_26.add(formularLibs);
+
+		JPanel panel_21 = new JPanel();
+		panel_19.add(panel_21);
+
+		JLabel label_8 = new JLabel("\u6CE8\u91CA\u5E93\uFF1A");
+		label_8.setFont(new Font("宋体", Font.PLAIN, 14));
+		panel_21.add(label_8);
+
+		annotationsLib = new JTextField();
+		annotationsLib.setFont(new Font("宋体", Font.PLAIN, 14));
+		annotationsLib.setEditable(false);
+		annotationsLib.setColumns(50);
+		panel_21.add(annotationsLib);
 		/**
 		 * 信息统计
 		 */
@@ -883,23 +917,50 @@ public class Hello implements ModeDealer, TableDealer, ProgressDealer,
 				}
 				Dealer dealer = new Dealer(path);
 				dealer.setPro(Hello.this);
-				path = Hello.this.randomsLibs.getText();
-				if (path == null || path.trim().length() == 0) {
-					JOptionPane.showMessageDialog(null, "请选择乱码库", "错误",
-							JOptionPane.ERROR_MESSAGE);
-					dealer = null;
+				Setter setter = null;
+				try {
+					setter = new Setter();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					JOptionPane.showConfirmDialog(Hello.this.frame, "配置文件错误");
 					return;
-				} else {
-					dealer.setBugs(InfoDialog.RANDOMS + "/" + path);
 				}
-				path = Hello.this.formularLibs.getText();
-				if (path == null || path.trim().length() == 0) {
-					JOptionPane.showMessageDialog(null, "请选择公式库", "错误",
-							JOptionPane.ERROR_MESSAGE);
-					dealer = null;
-					return;
-				} else {
-					dealer.setFormulars(InfoDialog.FORMULARS + "/" + path);
+				LinkedList<String> items = setter.getStatisticItems();
+				if (items.contains(Dealer.BUG_NUM)
+						|| items.contains(Dealer.HAVA_BUG)) {
+					path = Hello.this.randomsLibs.getText();
+					if (path == null || path.trim().length() == 0) {
+						JOptionPane.showMessageDialog(null, "请选择乱码库", "错误",
+								JOptionPane.ERROR_MESSAGE);
+						dealer = null;
+						return;
+					} else {
+						dealer.setBugs(InfoDialog.RANDOMS + "/" + path);
+					}
+				}
+				if (items.contains(Dealer.FORMULAR_NUM)) {
+					path = Hello.this.formularLibs.getText();
+					if (path == null || path.trim().length() == 0) {
+						JOptionPane.showMessageDialog(null, "请选择公式库", "错误",
+								JOptionPane.ERROR_MESSAGE);
+						dealer = null;
+						return;
+					} else {
+						dealer.setFormulars(InfoDialog.FORMULARS + "/" + path);
+					}
+				}
+				if (items.contains(Dealer.ANNOTAION_NUM)) {
+					path = Hello.this.annotationsLib.getText().trim();
+					if (path == null || path.trim().length() == 0) {
+						JOptionPane.showMessageDialog(null, "请选择注释库", "错误",
+								JOptionPane.ERROR_MESSAGE);
+						dealer = null;
+						return;
+					} else {
+						dealer.setAnnotations(InfoDialog.ANNOTATIONS + "/"
+								+ path);
+					}
 				}
 				new Thread(dealer).start();
 			}
@@ -916,30 +977,32 @@ public class Hello implements ModeDealer, TableDealer, ProgressDealer,
 				}
 				DefaultTableModel model = (DefaultTableModel) Hello.this.infoTable
 						.getModel();
-				HashMap<String, String> cols = new HashMap<String, String>();
-				cols.put(Dealer.NMAE, "PDF文件名");
-				cols.put(Dealer.COPY, "是否可拷贝");
-				cols.put(Dealer.BUG_NUM, "乱码数");
-				cols.put(Dealer.FORMULAR_NUM, "公式数");
-				cols.put(Dealer.IMAGE_NUM, "图片数");
-				cols.put(Dealer.PAGE_NUM, "页数");
-				cols.put(Dealer.NOTE, "备注");
+				Setter setter = null;
+				try {
+					setter = new Setter();
+				} catch (Exception e1) {
+					e1.printStackTrace();
+					JOptionPane.showConfirmDialog(Hello.this.frame, "配置文件错误");
+					return;
+				}
+				HashMap<String, String> map = new HashMap<String, String>();
+				LinkedList<String> items = setter.getStatisticItems();
+				for (int i = 0; i < items.size(); i++) {
+					map.put(items.get(i), model.getColumnName(i));
+				}
+				int colCount = model.getColumnCount();
 				int len = model.getRowCount();
 				JSONArray jsons = new JSONArray();
 				JSONObject json;
 				for (int i = 0; i < len; i++) {
 					json = new JSONObject();
-					json.put(Dealer.NMAE, model.getValueAt(i, 0));
-					json.put(Dealer.COPY, model.getValueAt(i, 1));
-					json.put(Dealer.IMAGE_NUM, model.getValueAt(i, 2));
-					json.put(Dealer.FORMULAR_NUM, model.getValueAt(i, 3));
-					json.put(Dealer.PAGE_NUM, model.getValueAt(i, 4));
-					json.put(Dealer.BUG_NUM, model.getValueAt(i, 5));
-					json.put(Dealer.NOTE, model.getValueAt(i, 6));
+					for (int j = 0; j < colCount; j++) {
+						json.put(items.get(i), model.getValueAt(i, j));
+					}
 					jsons.add(json);
 				}
 				new Thread(new Extractor(new File(path, "statistic.xls")
-						.getAbsolutePath(), cols, jsons, Hello.this)).start();
+						.getAbsolutePath(), map, jsons, Hello.this)).start();
 			}
 		});
 		panel_18.add(extractInfo, BorderLayout.SOUTH);
@@ -992,6 +1055,28 @@ public class Hello implements ModeDealer, TableDealer, ProgressDealer,
 		JSplitPane splitPane_1 = new JSplitPane();
 		panel_10.add(splitPane_1, BorderLayout.CENTER);
 		this.initVisibal();
+	}
+
+	protected void refreshInfoTable() {
+		// TODO Auto-generated method stub
+		Setter setter = null;
+		try {
+			setter = new Setter();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			JOptionPane.showConfirmDialog(this.frame, "配置文件错误");
+			return;
+		}
+		LinkedList<String> items = setter.getStatisticItems();
+		HashMap<String, String> map = Dealer.getProperityMap();
+		String[] objs = new String[items.size()];
+		for (int i = 0; i < objs.length; i++) {
+			objs[i] = map.get(items.get(i));
+		}
+		DefaultTableModel model = new DefaultTableModel(objs, 3);
+		Hello.this.infoTable.setModel(model);
+		items = null;
+		map = null;
 	}
 
 	private void initVisibal() {
@@ -1138,6 +1223,10 @@ public class Hello implements ModeDealer, TableDealer, ProgressDealer,
 			this.randomsLibs.setText(fileName);
 		} else if (type.equals(InfoDialog.FORMULARS)) {
 			this.formularLibs.setText(fileName);
+		} else if (type.equals(InfoDialog.ANNOTATIONS)) {
+			this.annotationsLib.setText(fileName);
+		} else if (type.equals(DialogDealer.SETTING)) {
+			this.refreshInfoTable();
 		}
 		this.frame.setEnabled(true);
 	}
@@ -1170,24 +1259,44 @@ public class Hello implements ModeDealer, TableDealer, ProgressDealer,
 			JSONArray eles = (JSONArray) result;
 			Iterator<JSONObject> p = eles.iterator();
 			JSONObject json;
+			String[] data = null;
+			Setter setter;
+			try {
+				setter = new Setter();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				JOptionPane.showConfirmDialog(this.frame, "配置文件错误");
+				return;
+			}
+			LinkedList<String> items = setter.getStatisticItems();
 			while (p.hasNext()) {
 				json = p.next();
-				model.addRow(new Object[] { json.getString(Dealer.NMAE),
-						json.getInt(Dealer.COPY) == 0 ? "否" : "是",
-						json.getInt(Dealer.IMAGE_NUM),
-						json.getInt(Dealer.FORMULAR_NUM),
-						json.getInt(Dealer.PAGE_NUM),
-						json.getInt(Dealer.BUG_NUM) == 0 ? "否" : "是",
-						json.getString(Dealer.NOTE) });
+				data = new String[items.size()];
+				for (int i = 0; i < data.length; i++) {
+					data[i] = json.getString(items.get(i));
+				}
+				model.addRow(data);
+				// model.addRow(new Object[] { json.getString(Dealer.NMAE),
+				// json.getInt(Dealer.COPY) == 0 ? "否" : "是",
+				// json.getInt(Dealer.IMAGE_NUM),
+				// json.getInt(Dealer.FORMULAR_NUM),
+				// json.getInt(Dealer.PAGE_NUM),
+				// json.getInt(Dealer.BUG_NUM) == 0 ? "否" : "是",
+				// json.getString(Dealer.NOTE) });
 			}
 			this.infoTable.validate();
 			break;
 		case ProgressDealer.EXTRACT_INFORMATION:
-			JOptionPane.showMessageDialog(null,result.toString(), "完成",
+			JOptionPane.showMessageDialog(null, result.toString(), "完成",
 					JOptionPane.INFORMATION_MESSAGE);
 			break;
 		default:
 			break;
 		}
+	}
+
+	public Component getFrame() {
+		return this.frame;
 	}
 }
